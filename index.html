@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>Rabbits VS Foxes!!</title>
+		<style>
+			/*.canvas {
+				float: left;
+				width: 600px;
+			}
+
+			.inputs {
+				float: left;
+			}*/
+
+			canvas {
+				-moz-box-shadow: 0 0 5px 5px#888;
+				-webkit-box-shadow: 0 0 5px 5px#888;
+				box-shadow: 0 0 5px 5px #888;	
+			}
+
+			body {
+				text-align: center;
+			}
+		</style>
+	</head>
+	<body onload="initSimulation();">
+		<h1>Rabbits VS Foxes!!</h1>
+		<div class="canvas"><canvas id="myCanvas" onclick="iterate();" width="640" height="640"></canvas></div>
+		<button onclick="startSimulation();">Start</button>
+		<button onclick="stopSimulation();">Stop</button>
+<!-- 		<div class="inputs">
+			Rabbit MaxAge: <input type="text" id="rabbitAge" value="5" />
+			Fox MaxAge: <input type="text" id="foxAge" value="8" />
+			<button onclick="startSimulation();">Restart</button>
+		</div> -->
+		<script src="cf.js"></script>
+	</body>
+</html>
