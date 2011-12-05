@@ -13,7 +13,22 @@
 				float: left;
 			}*/
 
-			canvas {
+			.container {
+				
+			}
+
+			.canvas {
+				width: 45%;
+				float: left;
+			}
+
+			.stats {
+				width: 300px;
+				height: 200px;
+				float: right;	
+			}
+
+			#myCanvas {
 				-moz-box-shadow: 0 0 5px 5px#888;
 				-webkit-box-shadow: 0 0 5px 5px#888;
 				box-shadow: 0 0 5px 5px #888;	
@@ -26,14 +41,16 @@
 	</head>
 	<body onload="initSimulation();">
 		<h1>Rabbits VS Foxes!!</h1>
-		<div class="canvas"><canvas id="myCanvas" onclick="iterate();" width="640" height="640"></canvas></div>
-		<button onclick="startSimulation();">Start</button>
-		<button onclick="stopSimulation();">Stop</button>
-<!-- 		<div class="inputs">
-			Rabbit MaxAge: <input type="text" id="rabbitAge" value="5" />
-			Fox MaxAge: <input type="text" id="foxAge" value="8" />
-			<button onclick="startSimulation();">Restart</button>
-		</div> -->
-		<script src="cf.js"></script>
+
+		<div class="container">
+			<div class="canvas"><canvas id="myCanvas" onclick="iterate();" width="640" height="640"></canvas></div>
+			<button onclick="startSimulation();">Start</button>
+			<button onclick="stopSimulation();">Stop</button>
+			<div class="stats" ></div>
+		</div>
+
+		<script src="flot/jquery.js"></script>
+		<script src="flot/jquery.flot.js"></script>
+		<script src="cf.js"></script>		
 	</body>
 </html>

@@ -15,6 +15,18 @@ var iteration = 0;
 
 var interval;
 
+var greenColors = [];
+var redColors = [];
+
+var plot = $(".stats");
+var data = [];
+var options = { 
+		bars: { show: true, barWidth: 0.7, fill: 1 }, 
+		xaxis: {show: false},
+		yaxis: {show: false},
+		grid: { borderWidth: 0 }
+	};
+
 function startSimulation() {
 	interval = setInterval(iterate, 100);
 }
@@ -26,10 +38,14 @@ function stopSimulation () {
 function initSimulation() {
 	matrix = createMatrix();
 
-	/*rabbitMaxAge = document.getElementById('rabbitAge').value;
-	foxMaxAge = document.getElementById('foxAge').value;*/
+	// generate colors
+	for (i = 0; i < 10; i += 1) {
+		greenColors.push('rgb(0, ' + getRandomNumber(200, 250) + ', 0)');
+	}
 
-	var i, x, y;
+	for (i = 0; i < 10; i += 1) {
+		redColors.push('rgb(' + getRandomNumber(200, 250) + ', 0, 0)');
+	}
 
 	// generate rabbits
 	for (i = 0; i < 1000; i += 1) {
@@ -101,10 +117,6 @@ function iterate() {
 				if (fox.age > foxMaxAge) {
 					delete matrix[i][j];
 					// reproduce
-					/*newPos = getRandomN8(i, j);
-					newMatrix[newPos.x][newPos.y] = { 'type': 'fox', 'age': 0, 'hunger': fox.hunger };
-					newPos = getRandomN8(i, j);
-					newMatrix[newPos.x][newPos.y] = { 'type': 'fox', 'age': 0, 'hunger': fox.hunger };*/
 					n8 = getN8(i, j);
 					var possiblePositions = [];
 
@@ -157,10 +169,10 @@ function iterate() {
 }
 
 function drawCanvas () {
-	var rabbitCount = 0;
-	context.clearRect(0, 0, canvas.width, canvas.height);
+	var rabbitCount = 0,
+			foxCount = 0;
+	canvas.width = canvas.width; 
 
-	// TODO: cache array length
 	for (var i = 0, length = matrix.length; i < length; i += 1) {
 		for (var j = 0; j < length; j += 1) {
 
@@ -168,10 +180,11 @@ function drawCanvas () {
 				switch(matrix[i][j].type) {
 					case 'rabbit':
 						drawRabbit(i, j);
-						//rabbitCount += 1;
+						rabbitCount += 1;
 						break;
 					case 'fox':
 						drawFox(i, j);
+						foxCount += 1;
 						break;
 					default:
 				}
@@ -179,8 +192,9 @@ function drawCanvas () {
 		}
 	}
 
-	///iteration += 1;
-	//console.log("(" + iteration + "): " + rabbitCount + " rabbits");
+	data = [[[0, rabbitCount], [1, foxCount]]];
+
+	$.plot(plot, data, options);
 }
 
 function getN8(x, y) {
@@ -235,11 +249,11 @@ function getRandomN8(x, y) {
 }
 
 function drawRabbit(x, y) {
-	drawPixel(x, y, 'rgb(0, 200, 0)');
+	drawPixel(x, y, greenColors[getRandomNumber(0, 10)]);
 }
 	
 function drawFox(x, y) {
-	drawPixel(x, y, 'rgb(200, 0, 0)');
+	drawPixel(x, y, redColors[getRandomNumber(0, 10)]);
 }
 
 function drawPixel(x, y, color) {
