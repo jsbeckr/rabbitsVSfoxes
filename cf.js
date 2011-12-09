@@ -8,6 +8,7 @@ var rabbitMaxAge = 5;
 var foxMaxAge = 8;
 var foxMaxHunger = 5;
 
+var tempMatrix;
 var matrix;
 var newMatrix;
 
@@ -28,7 +29,7 @@ var options = {
 	};
 
 function startSimulation() {
-	interval = setInterval(iterate, 100);
+	interval = setInterval(iterate, 150);
 }
 
 function stopSimulation () {
@@ -37,6 +38,7 @@ function stopSimulation () {
 
 function initSimulation() {
 	matrix = createMatrix();
+	tempMatrix = createMatrix();
 
 	// generate colors
 	for (i = 0; i < 10; i += 1) {
@@ -99,7 +101,7 @@ function iterate() {
 					newMatrix[newPos.x][newPos.y] = { 'type': 'rabbit', 'age': 0 };
 				} else {
 					newPos = getRandomN8(i, j);
-					newMatrix[newPos.x][newPos.y] = matrix[i][j];
+					newMatrix[newPos.x][newPos.y] = { 'type': 'rabbit', 'age': rabbit.age }; //matrix[i][j];
 					delete matrix[i][j];
 				}
 			}	
@@ -129,8 +131,8 @@ function iterate() {
 					for (k = 0; k < 2; k += 1) {
 						var randomNumber = getRandomNumber(0, possiblePositions.length);
 						newPos = possiblePositions[randomNumber];
-						possiblePositions.splice(randomNumber, 1);
 						newMatrix[newPos.x][newPos.y] = { 'type': 'fox', 'age': 0, 'hunger': fox.hunger };
+						possiblePositions.splice(randomNumber, 1);
 					}
 
 				} else {
@@ -151,11 +153,12 @@ function iterate() {
 							var rabbitPos = eatableRabbits[getRandomNumber(0, eatableRabbits.length)];
 							fox.hunger -= newMatrix[rabbitPos.x][rabbitPos.y].age;
 							fox.hunger = fox.hunger < 0 ? 0 : fox.hunger;
-							newMatrix[rabbitPos.x][rabbitPos.y] = fox;
+							newMatrix[rabbitPos.x][rabbitPos.y] = { 'type': 'fox', 'age': matrix[i][j].age, 'hunger': matrix[i][j].hunger};
+							delete matrix[i][j];
 						} else {
 							// no rabbit? :( just move
 							newPos = getRandomN8(i, j);
-							newMatrix[newPos.x][newPos.y] = matrix[i][j];
+							newMatrix[newPos.x][newPos.y] = { 'type': 'fox', 'age': matrix[i][j].age, 'hunger': matrix[i][j].hunger};
 							delete matrix[i][j];
 						}	
 					}
@@ -164,19 +167,20 @@ function iterate() {
 		}
 	}
 
-	matrix = newMatrix;
+	//matrix = newMatrix.clone();
+	matrix = JSON.parse(JSON.stringify(newMatrix));
 	drawCanvas();
 }
 
 function drawCanvas () {
 	var rabbitCount = 0,
 			foxCount = 0;
-	canvas.width = canvas.width; 
+	//canvas.width = canvas.width; 
 
 	for (var i = 0, length = matrix.length; i < length; i += 1) {
 		for (var j = 0; j < length; j += 1) {
 
-			if (matrix[i][j]) {
+			/*if (matrix[i][j]) {
 				switch(matrix[i][j].type) {
 					case 'rabbit':
 						drawRabbit(i, j);
@@ -188,6 +192,30 @@ function drawCanvas () {
 						break;
 					default:
 				}
+			}*/
+
+			if (tempMatrix[i][j] !== matrix[i][j]) {
+				if (matrix[i][j]) {
+					switch(matrix[i][j].type) {
+					case 'rabbit':
+						// dirty little hack
+						if (tempMatrix[i][j] && tempMatrix[i][j].type == 'rabbit')
+							break;
+						drawRabbit(i, j);
+						rabbitCount += 1;
+						break;
+					case 'fox':
+						if (tempMatrix[i][j] && tempMatrix[i][j].type == 'fox')
+							break;
+						drawFox(i, j);
+						foxCount += 1;
+						break;
+					default:
+						break;
+					}
+				} else {
+					drawPixel(i, j, 'rgb(255, 255, 255)');
+				}
 			}
 		}
 	}
@@ -195,6 +223,9 @@ function drawCanvas () {
 	data = [[[0, rabbitCount], [1, foxCount]]];
 
 	$.plot(plot, data, options);
+
+	tempMatrix = JSON.parse(JSON.stringify(matrix));
+	//tempMatrix = matrix.clone();
 }
 
 function getN8(x, y) {
