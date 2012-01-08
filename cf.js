@@ -19,17 +19,20 @@ var interval;
 var greenColors = [];
 var redColors = [];
 
-var plot = $(".stats");
-var data = [];
-var options = { 
-		bars: { show: true, barWidth: 0.7, fill: 1 }, 
-		xaxis: {show: false},
-		yaxis: {show: false},
-		grid: { borderWidth: 0 }
-	};
+var index = 0;
+var plot;
+var data;
+var data = [[1, 10], [2, 30]];
+var options = {
+  series: { shadowSize: 0 }, // drawing is faster without shadows
+  yaxis: { min: 0, max: 100 },
+  xaxis: { show: false }
+};
 
 function startSimulation() {
 	interval = setInterval(iterate, 150);
+
+	plot = $.plot($(".stats"), data, options);
 }
 
 function stopSimulation () {
@@ -55,7 +58,7 @@ function initSimulation() {
 		y = getRandomNumber(0, matrixLength);
 
 		if (!matrix[x][y]) {
-			matrix[x][y] = { 'type': 'rabbit', 'age': getRandomNumber(0, rabbitMaxAge) }; 
+			matrix[x][y] = { 'type': 'rabbit', 'age': getRandomNumber(0, rabbitMaxAge) };
 		} else {
 			i--;
 		}
@@ -67,11 +70,11 @@ function initSimulation() {
 		y = getRandomNumber(0, matrixLength);
 
 		if (!matrix[x][y]) {
-			matrix[x][y] = { 
-				'type': 'fox', 
+			matrix[x][y] = {
+				'type': 'fox',
 				'age': getRandomNumber(0, foxMaxAge),
 				'hunger': 0
-			}; 
+			};
 		} else {
 			i--;
 		}
@@ -104,7 +107,7 @@ function iterate() {
 					newMatrix[newPos.x][newPos.y] = { 'type': 'rabbit', 'age': rabbit.age }; //matrix[i][j];
 					delete matrix[i][j];
 				}
-			}	
+			}
 		}
 	}
 
@@ -160,10 +163,10 @@ function iterate() {
 							newPos = getRandomN8(i, j);
 							newMatrix[newPos.x][newPos.y] = { 'type': 'fox', 'age': matrix[i][j].age, 'hunger': matrix[i][j].hunger};
 							delete matrix[i][j];
-						}	
+						}
 					}
-				}			
-			}	
+				}
+			}
 		}
 	}
 
@@ -175,7 +178,7 @@ function iterate() {
 function drawCanvas () {
 	var rabbitCount = 0,
 			foxCount = 0;
-	//canvas.width = canvas.width; 
+	//canvas.width = canvas.width;
 
 	for (var i = 0, length = matrix.length; i < length; i += 1) {
 		for (var j = 0; j < length; j += 1) {
@@ -220,9 +223,12 @@ function drawCanvas () {
 		}
 	}
 
-	data = [[[0, rabbitCount], [1, foxCount]]];
+	//data = [[[0, rabbitCount], [1, foxCount]]];
+	data = [[[1, rabbitCount]]];
+	index++;
 
-	$.plot(plot, data, options);
+	plot.setData(data);
+  plot.draw();
 
 	tempMatrix = JSON.parse(JSON.stringify(matrix));
 	//tempMatrix = matrix.clone();
@@ -238,14 +244,14 @@ function getN8(x, y) {
 
 			if (newX < 0) {
 				newX = matrixLength - 1;
-			} 
+			}
 			else if (newX >= matrixLength) {
 				newX = 0;
 			}
 
 			if (newY < 0) {
 				newY = matrixLength - 1;
-			} 
+			}
 			else if (newY >= matrixLength) {
 				newY = 0;
 			}
@@ -268,7 +274,7 @@ function getRandomN8(x, y) {
 
 			if (!matrix[myX][myY] && !newMatrix[myX][myY]) {
 				newResults.push(results[i]);
-			} 
+			}
 		}
 	}
 
@@ -305,3 +311,59 @@ function createMatrix() {
 
 	return newMatrix;
 }
+
+
+
+
+// $(function () {
+    // we use an inline data source in the example, usually data would
+    // be fetched from a server
+    // var data = [], totalPoints = 300;
+    // function getRandomData() {
+    //     if (data.length > 0)
+    //         data = data.slice(1);
+
+    //     // do a random walk
+    //     while (data.length < totalPoints) {
+    //         var prev = data.length > 0 ? data[data.length - 1] : 50;
+    //         var y = prev + Math.random() * 10 - 5;
+    //         if (y < 0)
+    //             y = 0;
+    //         if (y > 100)
+    //             y = 100;
+    //         data.push(y);
+    //     }
+
+    //     // zip the generated y values with the x values
+    //     var res = [];
+    //     for (var i = 0; i < data.length; ++i)
+    //         res.push([i, data[i]]);
+    //     return res;
+    // }
+
+    // setup control widget
+    // var updateInterval = 30;
+    // // $("#updateInterval").val(updateInterval).change(function () {
+    // //     var v = $(this).val();
+    // //     if (v && !isNaN(+v)) {
+    // //         updateInterval = +v;
+    // //         if (updateInterval < 1)
+    // //             updateInterval = 1;
+    // //         if (updateInterval > 2000)
+    // //             updateInterval = 2000;
+    // //         $(this).val("" + updateInterval);
+    // //     }
+    // // });
+
+    // // setup plot
+    
+    // var plot = $.plot($("#placeholder"), [ getRandomData() ], options);
+
+    // function update() {
+    //     plot.setData([ getRandomData() ]);
+    //     // since the axes don't change, we don't need to call plot.setupGrid()
+    //     plot.draw();
+        
+    //     setTimeout(update, updateInterval);
+    // }
+// });
