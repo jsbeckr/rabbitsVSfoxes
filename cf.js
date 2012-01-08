@@ -37,7 +37,7 @@ function initSimulation() {
 		y = getRandomNumber(0, matrixLength);
 
 		if (!matrix[x][y]) {
-			matrix[x][y] = { 'type': 'rabbit', 'age': getRandomNumber(0, rabbitMaxAge) }; 
+			matrix[x][y] = { 'type': 'rabbit', 'age': getRandomNumber(0, rabbitMaxAge) };
 		} else {
 			i--;
 		}
@@ -49,11 +49,11 @@ function initSimulation() {
 		y = getRandomNumber(0, matrixLength);
 
 		if (!matrix[x][y]) {
-			matrix[x][y] = { 
-				'type': 'fox', 
+			matrix[x][y] = {
+				'type': 'fox',
 				'age': getRandomNumber(0, foxMaxAge),
 				'hunger': 0
-			}; 
+			};
 		} else {
 			i--;
 		}
@@ -86,7 +86,7 @@ function iterate() {
 					newMatrix[newPos.x][newPos.y] = matrix[i][j];
 					delete matrix[i][j];
 				}
-			}	
+			}
 		}
 	}
 
@@ -145,10 +145,10 @@ function iterate() {
 							newPos = getRandomN8(i, j);
 							newMatrix[newPos.x][newPos.y] = matrix[i][j];
 							delete matrix[i][j];
-						}	
+						}
 					}
-				}			
-			}	
+				}
+			}
 		}
 	}
 
@@ -193,14 +193,14 @@ function getN8(x, y) {
 
 			if (newX < 0) {
 				newX = matrixLength - 1;
-			} 
+			}
 			else if (newX >= matrixLength) {
 				newX = 0;
 			}
 
 			if (newY < 0) {
 				newY = matrixLength - 1;
-			} 
+			}
 			else if (newY >= matrixLength) {
 				newY = 0;
 			}
@@ -223,7 +223,7 @@ function getRandomN8(x, y) {
 
 			if (!matrix[myX][myY] && !newMatrix[myX][myY]) {
 				newResults.push(results[i]);
-			} 
+			}
 		}
 	}
 
