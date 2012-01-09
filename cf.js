@@ -21,18 +21,17 @@ var redColors = [];
 
 var index = 0;
 var plot;
-var data;
-var data = [[1, 10], [2, 30]];
+var data = [];
 var options = {
   series: { shadowSize: 0 }, // drawing is faster without shadows
-  yaxis: { min: 0, max: 100 },
+  yaxis: { min: 0, max: 16384 },
   xaxis: { show: false }
 };
 
 function startSimulation() {
 	interval = setInterval(iterate, 150);
 
-	plot = $.plot($(".stats"), data, options);
+	plot = $.plot($(".stats"), [getRandomData()], options);
 }
 
 function stopSimulation () {
@@ -175,15 +174,18 @@ function iterate() {
 	drawCanvas();
 }
 
+var rabbitData = [];
+var foxData = [];
+
 function drawCanvas () {
 	var rabbitCount = 0,
 			foxCount = 0;
-	//canvas.width = canvas.width;
+	canvas.width = canvas.width;
 
 	for (var i = 0, length = matrix.length; i < length; i += 1) {
 		for (var j = 0; j < length; j += 1) {
 
-			/*if (matrix[i][j]) {
+			if (matrix[i][j]) {
 				switch(matrix[i][j].type) {
 					case 'rabbit':
 						drawRabbit(i, j);
@@ -195,40 +197,42 @@ function drawCanvas () {
 						break;
 					default:
 				}
-			}*/
-
-			if (tempMatrix[i][j] !== matrix[i][j]) {
-				if (matrix[i][j]) {
-					switch(matrix[i][j].type) {
-					case 'rabbit':
-						// dirty little hack
-						if (tempMatrix[i][j] && tempMatrix[i][j].type == 'rabbit')
-							break;
-						drawRabbit(i, j);
-						rabbitCount += 1;
-						break;
-					case 'fox':
-						if (tempMatrix[i][j] && tempMatrix[i][j].type == 'fox')
-							break;
-						drawFox(i, j);
-						foxCount += 1;
-						break;
-					default:
-						break;
-					}
-				} else {
-					drawPixel(i, j, 'rgb(255, 255, 255)');
-				}
 			}
+
+			// if (tempMatrix[i][j] !== matrix[i][j]) {
+			// 	if (matrix[i][j]) {
+			// 		switch(matrix[i][j].type) {
+			// 		case 'rabbit':
+			// 			// dirty little hack
+			// 			if (tempMatrix[i][j] && tempMatrix[i][j].type == 'rabbit')
+			// 				break;
+			// 			drawRabbit(i, j);
+			// 			rabbitCount += 1;
+			// 			break;
+			// 		case 'fox':
+			// 			if (tempMatrix[i][j] && tempMatrix[i][j].type == 'fox')
+			// 				break;
+			// 			drawFox(i, j);
+			// 			foxCount += 1;
+			// 			break;
+			// 		default:
+			// 			break;
+			// 		}
+			// 	} else {
+			// 		drawPixel(i, j, 'rgb(255, 255, 255)');
+			// 	}
+			// }
 		}
 	}
 
 	//data = [[[0, rabbitCount], [1, foxCount]]];
-	data = [[[1, rabbitCount]]];
-	index++;
+	//data = [[1, rabbitCount]];
+	//data.push([[index++, rabbitCount], [index, foxCount]]);
+	rabbitData.push([index++, rabbitCount]);
+	foxData.push([index, foxCount]);
 
-	plot.setData(data);
-  plot.draw();
+	plot.setData([rabbitData, foxData]);
+  	plot.draw();
 
 	tempMatrix = JSON.parse(JSON.stringify(matrix));
 	//tempMatrix = matrix.clone();
@@ -312,34 +316,34 @@ function createMatrix() {
 	return newMatrix;
 }
 
+function getRandomData() {
+	if (data.length > 0)
+	    data = data.slice(1);
 
+	// do a random walk
+	while (data.length < 300) {
+	    var prev = data.length > 0 ? data[data.length - 1] : 50;
+	    var y = prev + Math.random() * 10 - 5;
+	    if (y < 0)
+	        y = 0;
+	    if (y > 100)
+	        y = 100;
+	    data.push(y);
+	}
+
+	// zip the generated y values with the x values
+	var res = [];
+	for (var i = 0; i < data.length; ++i)
+	    res.push([i, data[i]]);
+	return res;
+}
 
 
 // $(function () {
     // we use an inline data source in the example, usually data would
     // be fetched from a server
     // var data = [], totalPoints = 300;
-    // function getRandomData() {
-    //     if (data.length > 0)
-    //         data = data.slice(1);
-
-    //     // do a random walk
-    //     while (data.length < totalPoints) {
-    //         var prev = data.length > 0 ? data[data.length - 1] : 50;
-    //         var y = prev + Math.random() * 10 - 5;
-    //         if (y < 0)
-    //             y = 0;
-    //         if (y > 100)
-    //             y = 100;
-    //         data.push(y);
-    //     }
-
-    //     // zip the generated y values with the x values
-    //     var res = [];
-    //     for (var i = 0; i < data.length; ++i)
-    //         res.push([i, data[i]]);
-    //     return res;
-    // }
+    // 
 
     // setup control widget
     // var updateInterval = 30;
